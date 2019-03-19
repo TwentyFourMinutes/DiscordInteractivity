@@ -7,6 +7,7 @@ using DiscordInteractivity.Pager;
 using DiscordInteractivity.Results;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -63,20 +64,20 @@ namespace DiscordInteractivity.Core
 		}
 		#endregion
 
-		protected async Task<WaitingResult> WaitForUserMessageAsync(SocketUser user = null, ISocketMessageChannel channel = null, TimeSpan? timeOut = null)
+		protected async Task<WaitingResult> WaitForUserMessageAsync(SocketUser user = null, IMessageChannel channel = null, bool IgnoreCommands = true, TimeSpan? timeOut = null)
 		{
 			if (user is null)
 				user = Context.User;
 			if (channel is null)
 				channel = Context.Channel;
 			if (timeOut is null)
-				timeOut = InteractivityService.Config.DefaultMessageTimeout;
+				timeOut = InteractivityService.Config.DefaultWaitingTimeout;
 
 			var tcs = new TaskCompletionSource<SocketMessage>();
 
 			Task MessageReceived(SocketMessage arg)
 			{
-				if (arg.Channel.Id != channel.Id || arg.Author.Id != user.Id)
+				if (arg.Channel.Id != channel.Id || arg.Author.Id != user.Id || (IgnoreCommands && InteractivityService.Config.CommandPrefixes.Any(x => arg.Content.StartsWith(x))))
 					return Task.CompletedTask;
 
 				tcs.SetResult(arg);
