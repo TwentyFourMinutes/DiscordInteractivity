@@ -1,14 +1,10 @@
 # DiscordInteractivity
 
-<hr>
-
 This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/discord-net/Discord.Net) which will add some useful features as well as some interactivity.
 
 
 
 ## Features
-
-<hr>
 
 - Waiting for a User message in a specific Channel
 
@@ -19,8 +15,6 @@ This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/di
   
 
 ## How to use it
-
-<hr>
 
 Create a new instance of the `InteractiveService` e.g.
 ```cs
@@ -50,8 +44,6 @@ public class Commands : Interactivity
 
 
 ## Note
-
-<hr>
 
 This is a re-work of the [Discord.Addons.Net](https://github.com/foxbot/Discord.Addons.Interactive) addon by [foxbot](https://github.com/foxbot)!
 
