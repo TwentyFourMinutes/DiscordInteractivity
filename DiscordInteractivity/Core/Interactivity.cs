@@ -64,7 +64,7 @@ namespace DiscordInteractivity.Core
 		}
 		#endregion
 
-		protected async Task<WaitingResult> WaitForUserMessageAsync(SocketUser user = null, IMessageChannel channel = null, bool IgnoreCommands = true, TimeSpan? timeOut = null)
+		protected async Task<WaitingResult> WaitForUserMessageAsync(SocketUser user = null, IMessageChannel channel = null, bool ignoreCommands = true, TimeSpan? timeOut = null)
 		{
 			if (user is null)
 				user = Context.User;
@@ -77,7 +77,7 @@ namespace DiscordInteractivity.Core
 
 			Task MessageReceived(SocketMessage arg)
 			{
-				if (arg.Channel.Id != channel.Id || arg.Author.Id != user.Id || (IgnoreCommands && InteractivityService.Config.CommandPrefixes.Any(x => arg.Content.StartsWith(x))))
+				if (arg.Channel.Id != channel.Id || arg.Author.Id != user.Id || (ignoreCommands && InteractivityService.Config.CommandPrefixes.Any(x => arg.Content.StartsWith(x))))
 					return Task.CompletedTask;
 
 				tcs.SetResult(arg);
@@ -102,8 +102,67 @@ namespace DiscordInteractivity.Core
 			}
 		}
 
+		#region Static Methods
+		public static async Task<WaitingResult> WaitForUserMessageAsync(InteractivityService interactivityService, SocketUser user, IMessageChannel channel, bool ignoreCommands = true, TimeSpan? timeOut = null)
+		{
+			if (user is null || channel is null)
+				throw new ArgumentNullException("The user, channel and the interactivityService parameter can't be null!");
+
+			var tcs = new TaskCompletionSource<SocketMessage>();
+
+			Task MessageReceived(SocketMessage arg)
+			{
+				if (arg.Channel.Id != channel.Id || arg.Author.Id != user.Id || (ignoreCommands && interactivityService.Config.CommandPrefixes.Any(x => arg.Content.StartsWith(x))))
+					return Task.CompletedTask;
+
+				tcs.SetResult(arg);
+
+				return Task.CompletedTask;
+			}
+
+			interactivityService.DiscordClient.MessageReceived += MessageReceived;
+
+			var trigger = tcs.Task;
+			var task = await Task.WhenAny(trigger, Task.Delay(timeOut.Value)).ConfigureAwait(false);
+
+			interactivityService.DiscordClient.MessageReceived -= MessageReceived;
+
+			if (task == trigger)
+			{
+				return new WaitingResult { Message = await trigger.ConfigureAwait(false), Result = Result.UserResponded };
+			}
+			else
+			{
+				return new WaitingResult { Result = Result.TimedOut };
+			}
+		}
+		public static async Task<IUserMessage> ReplyAndDeleteAsync(InteractivityService interactivityService, IMessageChannel channel, string text = null, bool isTTS = false, Embed embed = null, TimeSpan? timeOut = null, RequestOptions options = null)
+		{
+			if (channel is null || interactivityService is null)
+				throw new ArgumentNullException("The channel and the interactivityService parameter can't be null!");
+
+			IUserMessage msg = await channel.SendMessageAsync(text, isTTS, embed, options).ConfigureAwait(false);
+			DeleteMessageAfter(msg, timeOut ?? interactivityService.Config.DefaultMessageTimeout);
+			return msg;
+		}
+		public static IUser GetBotAuthor(InteractivityService interactivityService)
+		{
+			if (interactivityService is null)
+				throw new ArgumentNullException("The interactivityService parameter can't be null!");
+
+			return interactivityService.BotOwner;
+		}
+		public static string GetCopyrightInfo(InteractivityService interactivityService)
+		{
+			if (interactivityService is null)
+				throw new ArgumentNullException("The interactivityService parameter can't be null!");
+
+			return interactivityService.CopyrightInfo;
+		}
+		#endregion
+
 		#region HelperMethods
-		private void DeleteMessageAfter(RestUserMessage msg, TimeSpan timeOut)
+		private static void DeleteMessageAfter(IUserMessage msg, TimeSpan timeOut)
 		{
 			_ = Task.Delay(timeOut).ContinueWith(_ => msg.DeleteAsync().ConfigureAwait(false)).ConfigureAwait(false);
 		}

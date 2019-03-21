@@ -44,6 +44,6 @@ public class Commands : Interactivity
 ## Note
 
 - Some versions of this addon might be build against the [nightly builds](https://github.com/discord-net/Discord.Net#unstable-myget) of Discord.Net!
-
 - This is a re-work of the [Discord.Addons.Net](https://github.com/foxbot/Discord.Addons.Interactive) addon by [foxbot](https://github.com/foxbot)!
+- Currently there is no Documentation, if you need any help regarding to the Addon feel free to send me a message on Discord, my Username is `24_minutes#7496`!
 
