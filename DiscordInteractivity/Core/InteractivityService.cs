@@ -1,12 +1,7 @@
 ﻿using Discord;
-using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
 using DiscordInteractivity.Callbacks;
-using DiscordInteractivity.Pager;
 using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Core
 {

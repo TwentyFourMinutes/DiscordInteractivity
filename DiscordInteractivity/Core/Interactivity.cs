@@ -8,7 +8,6 @@ using DiscordInteractivity.Results;
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Core
@@ -64,7 +63,8 @@ namespace DiscordInteractivity.Core
 		}
 		#endregion
 
-		protected async Task<WaitingResult> WaitForUserMessageAsync(SocketUser user = null, IMessageChannel channel = null, bool ignoreCommands = true, TimeSpan? timeOut = null)
+		#region Wait for User Actions
+		protected async Task<WaitingMessageResult> WaitForMessageAsync(SocketUser user = null, IMessageChannel channel = null, bool ignoreCommands = true, TimeSpan? timeOut = null)
 		{
 			if (user is null)
 				user = Context.User;
@@ -94,16 +94,54 @@ namespace DiscordInteractivity.Core
 
 			if (task == trigger)
 			{
-				return new WaitingResult { Message = await trigger.ConfigureAwait(false), Result = Result.UserResponded };
+				return new WaitingMessageResult { Message = await trigger.ConfigureAwait(false), Result = Result.UserResponded };
 			}
 			else
 			{
-				return new WaitingResult { Result = Result.TimedOut };
+				return new WaitingMessageResult { Result = Result.TimedOut };
 			}
 		}
+		protected async Task<WaitingReactionResult> WaitForReactionAsync(SocketUser user = null, IMessageChannel channel = null, TimeSpan? timeOut = null)
+		{
+			if (user is null)
+				user = Context.User;
+			if (channel is null)
+				channel = Context.Channel;
+			if (timeOut is null)
+				timeOut = InteractivityService.Config.DefaultWaitingTimeout;
+
+			var tcs = new TaskCompletionSource<SocketReaction>();
+
+			Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+			{
+				if (arg2.Id != channel.Id || arg3.UserId != user.Id)
+					return Task.CompletedTask;
+
+				tcs.SetResult(arg3);
+
+				return Task.CompletedTask;
+			}
+
+			Context.Client.ReactionAdded += ReactionAdded;
+
+			var trigger = tcs.Task;
+			var task = await Task.WhenAny(trigger, Task.Delay(timeOut.Value)).ConfigureAwait(false);
+
+			Context.Client.ReactionAdded -= ReactionAdded;
+
+			if (task == trigger)
+			{
+				return new WaitingReactionResult { Message = await trigger.ConfigureAwait(false), Result = Result.UserResponded };
+			}
+			else
+			{
+				return new WaitingReactionResult { Result = Result.TimedOut };
+			}
+		}
+		#endregion
 
 		#region Static Methods
-		public static async Task<WaitingResult> WaitForUserMessageAsync(InteractivityService interactivityService, SocketUser user, IMessageChannel channel, bool ignoreCommands = true, TimeSpan? timeOut = null)
+		public static async Task<WaitingMessageResult> WaitForMessageAsync(InteractivityService interactivityService, SocketUser user, IMessageChannel channel, bool ignoreCommands = true, TimeSpan? timeOut = null)
 		{
 			if (user is null || channel is null)
 				throw new ArgumentNullException("The user, channel and the interactivityService parameter can't be null!");
@@ -129,11 +167,11 @@ namespace DiscordInteractivity.Core
 
 			if (task == trigger)
 			{
-				return new WaitingResult { Message = await trigger.ConfigureAwait(false), Result = Result.UserResponded };
+				return new WaitingMessageResult { Message = await trigger.ConfigureAwait(false), Result = Result.UserResponded };
 			}
 			else
 			{
-				return new WaitingResult { Result = Result.TimedOut };
+				return new WaitingMessageResult { Result = Result.TimedOut };
 			}
 		}
 		public static async Task<IUserMessage> ReplyAndDeleteAsync(InteractivityService interactivityService, IMessageChannel channel, string text = null, bool isTTS = false, Embed embed = null, TimeSpan? timeOut = null, RequestOptions options = null)

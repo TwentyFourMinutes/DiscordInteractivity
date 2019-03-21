@@ -37,7 +37,7 @@ namespace DiscordInteractivity.Pager
 
 			_ = Task.Delay(timeOut).ContinueWith(_ =>
 			{
-				_message.DeleteAsync().ConfigureAwait(false);
+				_message.TryDeleteAsync().ConfigureAwait(false);
 				this.Dispose();
 			}).ConfigureAwait(false);
 
@@ -78,7 +78,7 @@ namespace DiscordInteractivity.Pager
 				_currentPage--;
 			else if (emoteName == _interactivity.Config.StopEmoji.Name)
 			{
-				await _message.DeleteAsync();
+				await _message.TryDeleteAsync();
 				Dispose();
 				return;
 			}

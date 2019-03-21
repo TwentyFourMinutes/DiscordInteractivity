@@ -1,6 +1,4 @@
-﻿using Discord.WebSocket;
-using DiscordInteractivity.Core;
-using System;
+﻿using DiscordInteractivity.Core;
 using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Callbacks

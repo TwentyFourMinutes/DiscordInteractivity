@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DiscordInteractivity.Enums
+﻿namespace DiscordInteractivity.Enums
 {
 	public enum Result
 	{
