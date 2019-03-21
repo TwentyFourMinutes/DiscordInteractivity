@@ -6,11 +6,11 @@ This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/di
 
 ## Features
 
-- Waiting for a User message in a specific Channel
+- Waiting for a user message or reaction in a specific channel
 
 - Reply and delete messages/files with timeouts
 
-- Paginators which allow for paginated messages
+- Send Paginators which allow for paginated messages
 
   
 
