@@ -11,6 +11,7 @@ namespace DiscordInteractivity.Core
 
 		public List<string> CommandPrefixes { get; set; } = new List<string> { "!" };
 		public bool HasMentionPrefix { get; set; } = true;
+		public bool SetExtensionReferenceAutomatically { get; set; } = true;
 
 		public Emoji StartEmoji { get; set; } = new Emoji("⏮");
 		public Emoji BacktEmoji { get; set; } = new Emoji("◀");

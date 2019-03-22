@@ -38,7 +38,14 @@ namespace DiscordInteractivity.Core
 			DiscordCallbacks = new DiscordClientCallbacks(this);
 
 			DiscordClient.Ready += DiscordCallbacks.Ready;
+
+			if (Config.SetExtensionReferenceAutomatically)
+				InteractivityExtensions.SetInteractivityInstance(this);
 		}
+
+		public TimeSpan GetUptime() => DateTime.UtcNow - StartupTime;
+		public IUser GetBotAuthor() => BotOwner;
+		public string GetCopyrightInfo() => CopyrightInfo;
 
 		public void Dispose()
 		{

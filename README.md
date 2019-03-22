@@ -1,16 +1,16 @@
 # DiscordInteractivity
 
-This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/discord-net/Discord.Net) which will add some useful features as well as some interactivity.
+This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/discord-net/Discord.Net) which adds some useful features as well as some interactivity.
 
 
 
 ## Features
 
-- Waiting for a user message or reaction in a specific channel
+- Waiting for a user message or a reaction in a specific channel
 
 - Reply and delete messages/files with timeouts
 
-- Send Paginators which allow for paginated messages
+- Send powerful Paginators which allow for custom paginated messages
 
   
 

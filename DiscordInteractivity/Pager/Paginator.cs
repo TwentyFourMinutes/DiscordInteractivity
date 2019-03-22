@@ -17,7 +17,7 @@ namespace DiscordInteractivity.Pager
 		private readonly int _totalPages;
 		private int _currentPage;
 
-		private RestUserMessage _message;
+		private IUserMessage _message;
 
 		public Paginator(PaginatorBuilder paginator)
 		{
@@ -25,17 +25,17 @@ namespace DiscordInteractivity.Pager
 			_totalPages = _paginator.Pages.Count;
 		}
 
-		internal async Task<RestUserMessage> Initialize(InteractivityService interactivity, SocketCommandContext context, TimeSpan timeOut)
+		internal async Task<IUserMessage> Initialize(InteractivityService interactivity, IMessageChannel channel, TimeSpan? timeOut)
 		{
 			_interactivity = interactivity;
 
 			var page = GetCurrentPage();
-			_message = await context.Channel.SendMessageAsync(embed: page);
+			_message = await channel.SendMessageAsync(embed: page);
 
 			_interactivity.DiscordClient.ReactionAdded += ReactionChanged;
 			_interactivity.DiscordClient.ReactionRemoved += ReactionChanged;
 
-			_ = Task.Delay(timeOut).ContinueWith(_ =>
+			_ = Task.Delay(timeOut ?? interactivity.Config.DefaultPagerTimeout).ContinueWith(_ =>
 			{
 				_message.TryDeleteAsync().ConfigureAwait(false);
 				this.Dispose();
@@ -46,7 +46,7 @@ namespace DiscordInteractivity.Pager
 			return _message;
 		}
 
-		private void AddReactions(RestUserMessage msg)
+		private void AddReactions(IUserMessage msg)
 		{
 			_ = Task.Run(async () =>
 			{
