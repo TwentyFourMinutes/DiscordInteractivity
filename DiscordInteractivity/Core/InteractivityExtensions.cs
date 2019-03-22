@@ -15,16 +15,31 @@ namespace DiscordInteractivity.Core
 	{
 		private static InteractivityService _InteractivityInstance;
 
-		public static async Task<bool> TryDeleteAsync(this IDeletable deletable)
+		/// <summary>
+		///	Trys to delete the object and returns if it was successfull or not
+		/// </summary>
+		/// <param name="deletable">The object to be deleted.</param>
+		/// <param name="options">The options to be used while sending the request.</param>
+		public static async Task<bool> TryDeleteAsync(this IDeletable deletable, RequestOptions options = null)
 		{
 			try
 			{
-				await deletable.DeleteAsync().ConfigureAwait(false);
+				await deletable.DeleteAsync(options).ConfigureAwait(false);
 			}
 			catch { return false; }
 			return true;
 		}
-		
+
+		/// <summary>
+		/// Sends a message to an <see cref="IMessageChannel"/> and deletes it after the <see cref="TimeSpan"/> elapsed.
+		/// </summary>
+		/// <param name="channel">The <see cref="IMessageChannel"/> where the message should be send in.</param>
+		/// <param name="text">The message to be sent.</param>
+		/// <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
+		/// <param name="embed">The <see cref="Embed"/> to be sent.</param>
+		/// <param name="timeOut">The <see cref="TimeSpan"/> it needs to wait before deleting the message.</param>
+		/// <param name="options">The options to be used while sending the request.</param>
+		/// <exception cref="InvalidOperationException"/>
 		public static async Task<IUserMessage> SendAndDeleteMessageAsync(this IMessageChannel channel, string text = null, bool isTTS = false, Embed embed = null, TimeSpan? timeOut = null, RequestOptions options = null)
 		{
 			if (_InteractivityInstance is null)
@@ -33,6 +48,17 @@ namespace DiscordInteractivity.Core
 			DeleteMessageAfter(msg, timeOut);
 			return msg;
 		}
+		/// <summary>
+		/// Sends a file to an <see cref="IMessageChannel"/> with an optional caption and deletes it after the <see cref="TimeSpan"/> elapsed.
+		/// </summary>
+		/// <param name="filePath">The file path of the file to be sent.</param>
+		/// <param name="channel">The <see cref="IMessageChannel"/> where the message should be send in.</param>
+		/// <param name="text">The message to be sent.</param>
+		/// <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
+		/// <param name="embed">The <see cref="Embed"/> to be sent.</param>
+		/// <param name="timeOut">The <see cref="TimeSpan"/> it needs to wait before deleting the message.</param>
+		/// <param name="options">The options to be used while sending the request.</param>
+		/// <exception cref="InvalidOperationException"/>
 		public static async Task<IUserMessage> SendAndDeleteFileAsync(this IMessageChannel channel, string filePath, string text = null, bool isTTS = false, Embed embed = null, TimeSpan? timeOut = null, RequestOptions options = null)
 		{
 			if (_InteractivityInstance is null)
@@ -41,6 +67,17 @@ namespace DiscordInteractivity.Core
 			DeleteMessageAfter(msg, timeOut);
 			return msg;
 		}
+		/// <summary>
+		/// Sends a file to an <see cref="IMessageChannel"/> with an optional caption and deletes it after the <see cref="TimeSpan"/> elapsed.
+		/// </summary>
+		/// <param name="stream">The stream of the file to be sent.</param>
+		/// <param name="channel">The <see cref="IMessageChannel"/> where the message should be send in.</param>
+		/// <param name="text">The message to be sent.</param>
+		/// <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
+		/// <param name="embed">The <see cref="Embed"/> to be sent.</param>
+		/// <param name="timeOut">The <see cref="TimeSpan"/> it needs to wait before deleting the message.</param>
+		/// <param name="options">The options to be used while sending the request.</param>
+		/// <exception cref="InvalidOperationException"/>
 		public static async Task<IUserMessage> SendAndDeleteFileAsync(this IMessageChannel channel, Stream stream, string filename, string text = null, bool isTTS = false, Embed embed = null, TimeSpan? timeOut = null, RequestOptions options = null)
 		{
 			if (_InteractivityInstance is null)
@@ -49,6 +86,14 @@ namespace DiscordInteractivity.Core
 			DeleteMessageAfter(msg, timeOut);
 			return msg;
 		}
+		/// <summary>
+		/// Sends a <see cref="Paginator"/> to an <see cref="IMessageChannel"/> and deletes it after the <see cref="TimeSpan"/> elapsed.
+		/// </summary>
+		/// <param name="channel">The <see cref="IMessageChannel"/> where the message should be send in.</param>
+		/// <param name="paginator">The <see cref="Paginator"/> to be sent.</param>
+		/// <param name="timeOut">The <see cref="TimeSpan"/> it needs to wait before deleting the <see cref="Paginator"/>.</param>
+		/// <param name="options">The options to be used while sending the request.</param>
+		/// <exception cref="InvalidOperationException"/>
 		public static async Task<IUserMessage> SendPaginatorAsync(this IMessageChannel channel, Paginator paginator, TimeSpan? timeOut = null, RequestOptions options = null)
 		{
 			if (_InteractivityInstance is null)
@@ -56,6 +101,14 @@ namespace DiscordInteractivity.Core
 			return await paginator.Initialize(_InteractivityInstance, channel, timeOut).ConfigureAwait(false);
 		}
 
+		/// <summary>
+		/// Waits for an <see cref="IUser"/> to sent a message in a specific channel.
+		/// </summary>
+		/// <param name="channel">The <see cref="IMessageChannel"/> where the message should be waited for.</param>
+		/// <param name="user">The <see cref="IUser"/> to be waited for.</param>
+		/// <param name="ignoreCommands">Determines whether messages with Command Prefixes should be ignored.</param>
+		/// <param name="timeOut">The <see cref="TimeSpan"/> it waits for the user.</param>
+		/// <exception cref="InvalidOperationException"/>
 		public static async Task<WaitingMessageResult> WaitForMessageAsync(this IMessageChannel channel, IUser user, bool ignoreCommands = true, TimeSpan? timeOut = null)
 		{
 			if (_InteractivityInstance is null)
@@ -89,6 +142,13 @@ namespace DiscordInteractivity.Core
 				return new WaitingMessageResult { Result = Result.TimedOut };
 			}
 		}
+		/// <summary>
+		/// Waits for an <see cref="IUser"/> to react in a specific channel.
+		/// </summary>
+		/// <param name="channel">The <see cref="IMessageChannel"/> where the reaction should be waited for.</param>
+		/// <param name="user">The <see cref="IUser"/> to be waited for.</param>
+		/// <param name="timeOut">The <see cref="TimeSpan"/> it waits for the user.</param>
+		/// <exception cref="InvalidOperationException"/>
 		public static async Task<WaitingReactionResult> WaitForReactionAsync(this IMessageChannel channel, IUser user, TimeSpan? timeOut = null)
 		{
 			if (_InteractivityInstance is null)
@@ -123,6 +183,9 @@ namespace DiscordInteractivity.Core
 			}
 		}
 
+		/// <summary>
+		/// Sets the internal <see cref="InteractivityService"/> instance which is needed for the extension methods.
+		/// </summary>
 		public static void SetInteractivityInstance(InteractivityService service)
 		{
 			_InteractivityInstance = service;
