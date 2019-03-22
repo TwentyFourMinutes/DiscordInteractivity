@@ -1,8 +1,6 @@
 # DiscordInteractivity
 
-```
 [![NuGet](https://img.shields.io/nuget/vpre/DiscordInteractivity.svg?style=plastic)](https://www.nuget.org/packages/DiscordInteractivity)
-```
 
 This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/discord-net/Discord.Net) which adds some useful features as well as some interactivity.
 
