@@ -8,10 +8,10 @@
     <PackageLicenseUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/blob/dev/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageTags>Discord.Net Discord.Net.Addons Discord.Addons DiscordInteractivity Discord</PackageTags>
+    <PackageTags>Discord.Net Discord.Net.Addons Discord.Addons DiscordInteractivity Discord Interactivity Addon</PackageTags>
     <Copyright>Copyright 2019 ©</Copyright>
     <AssemblyName>DiscordInteractivity</AssemblyName>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
