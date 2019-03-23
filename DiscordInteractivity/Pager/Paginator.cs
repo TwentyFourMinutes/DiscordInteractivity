@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using DiscordInteractivity.Core;
 using DiscordInteractivity.Enums;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Pager
@@ -19,7 +20,7 @@ namespace DiscordInteractivity.Pager
 
 		private IUserMessage _message;
 
-		public Paginator(PaginatorBuilder paginator)
+		internal Paginator(PaginatorBuilder paginator)
 		{
 			_paginator = paginator;
 			_totalPages = _paginator.Pages.Count;
@@ -32,7 +33,7 @@ namespace DiscordInteractivity.Pager
 			var page = GetCurrentPage();
 			_message = await channel.SendMessageAsync(embed: page);
 
-			_interactivity.DiscordClient.ReactionAdded += ReactionChanged;
+			_interactivity.DiscordClient.ReactionAdded += ReactionAdded;
 			_interactivity.DiscordClient.ReactionRemoved += ReactionChanged;
 
 			_ = Task.Delay(timeOut ?? interactivity.Config.DefaultPagerTimeout).ContinueWith(_ =>
@@ -63,6 +64,21 @@ namespace DiscordInteractivity.Pager
 					//TODO
 				}
 			});
+		}
+
+		private async Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+		{
+			if (_paginator.RemoveOtherReactions && (_paginator.Author.Id != arg3.UserId || !_interactivity.Config.PagerEmojis.Any(x => x.Name == arg3.Emote.Name)))
+			{
+				if (arg3.User.IsSpecified)
+				{
+					await arg1.GetOrDownloadAsync();
+					await arg1.Value.RemoveReactionAsync(arg3.Emote, arg3.User.Value);
+				}
+				return;
+			}
+			else
+				await ReactionChanged(arg1, arg2, arg3);
 		}
 
 		private async Task ReactionChanged(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)

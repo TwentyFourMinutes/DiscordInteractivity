@@ -14,6 +14,8 @@ This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/di
 
 - Send powerful Paginators which allow for custom paginated messages
 
+- Set per user Cooldowns for individual commands and whole modules
+
   
 
 ## How to use it

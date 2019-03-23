@@ -48,6 +48,8 @@ namespace DiscordInteractivity.Core
 		/// </summary>
 		public Emoji EndEmoji { get; set; } = new Emoji("⏭");
 
+		internal Emoji[] PagerEmojis;
+
 		/// <summary>
 		/// Gets or sets the default timeout for messages that get deleted after they are sent.
 		/// </summary>

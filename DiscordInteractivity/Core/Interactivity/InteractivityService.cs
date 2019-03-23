@@ -27,7 +27,7 @@ namespace DiscordInteractivity.Core
 		/// Determines whether this instance is already Dispoed or not.
 		/// </summary>
 		public bool IsDisposed { get; private set; }
-		
+
 		public InteractivityService(DiscordSocketClient discordClient) : this(new InteractivityServiceConfig { DiscordClient = discordClient }) { }
 		public InteractivityService(InteractivityServiceConfig config)
 		{
@@ -37,6 +37,7 @@ namespace DiscordInteractivity.Core
 			Config = config;
 			DiscordClient = Config.DiscordClient;
 			StartupTime = DateTime.UtcNow;
+			Config.PagerEmojis = new Emoji[5] { config.StartEmoji, config.BacktEmoji, config.StopEmoji, config.ForwardEmoji, config.EndEmoji };
 
 			DiscordCallbacks = new DiscordClientCallbacks(this);
 
