@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Twenty</Authors>
-    <Description>This is an addon for the Discord API Wrapper Discord.Net which will add some useful features as well as some interactivity.</Description>
+    <Description>This is an addon for the Discord API Wrapper Discord.Net which adds some useful features as well as some interactivity.</Description>
     <PackageLicenseUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/blob/dev/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -14,6 +14,7 @@
     <Version>1.0.0.3</Version>
     <AssemblyVersion>1.0.0.3</AssemblyVersion>
     <FileVersion>1.0.0.3</FileVersion>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
