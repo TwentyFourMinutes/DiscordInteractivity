@@ -22,30 +22,7 @@ This is an addon for the Discord API Wrapper [Discord.Net](https://github.com/di
 
 ## How to use it
 
-Create a new instance of the `InteractiveService` e.g.
-```cs
-var _interactive = new InteractivityService(DiscordClient)
-```
-
-and add it to your ServiceCollection e.g.
-
-```cs
-public IServiceProvider BuildServiceProvider() => new ServiceCollection()
-                    ...
-                    .AddSingleton(_interactive)
-                    .BuildServiceProvider();
-```
-
-For the last step all your Modules must inherit from `Ineractivity` if you want them to have the features this addons brings with it e.g.
-
-```cs
-public class Commands : Interactivity
-{
-
-...
-
-}
-```
+Take a look at the [documentation](https://github.com/TwentyFourMinutes/DiscordInteractivity/wiki), which shows and explains many of the powerful features. For the really basic setup look [here](https://github.com/TwentyFourMinutes/DiscordInteractivity/wiki/InteractivityService#basic-setup) and follow the Basic Setup instructions.
 
 
 
@@ -53,7 +30,7 @@ public class Commands : Interactivity
 
 - Some versions of this addon might be build against the [nightly builds](https://github.com/discord-net/Discord.Net#unstable-myget) of Discord.Net!
 
-- Currently there is no Documentation, if you need any help regarding to the Addon feel free to send me a message on Discord, my Username is `24_minutes#7496`!
+- If you need any further help regarding to the Addon feel free to send me a message on Discord, my Username is `24_minutes#7496`!
 
   
 

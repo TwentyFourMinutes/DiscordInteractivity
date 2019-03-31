@@ -45,6 +45,9 @@ namespace DiscordInteractivity.Core.Attributes
 				}
 			});
 		}, null, 600000, 600000);
+
+		public static event Func<CooldownAttribute, TimeSpan, Task> UserOnCooldown;
+		
 		/// <summary>
 		/// Attaches a cooldown per user to your command.
 		/// </summary>
@@ -79,15 +82,16 @@ namespace DiscordInteractivity.Core.Attributes
 			{
 				if (data.InvokeCount >= Count)
 				{
-					var offset = DateTime.UtcNow.Add(Every);
-					if (data.NextReset <= DateTime.UtcNow)
+					var now = DateTime.UtcNow;
+
+					if (data.NextReset <= now)
 					{
-						data.NextReset = offset;
+						data.NextReset = now.Add(Every);
 						data.InvokeCount = 0;
 					}
 					else
 					{
-						data.NextReset = offset;
+						_ = UserOnCooldown?.Invoke(this, data.NextReset - now);
 						return Task.FromResult(PreconditionResult.FromError("User is on timeout!"));
 					}
 				}
