@@ -1,15 +1,32 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using DiscordInteractivity.Callbacks;
+using DiscordInteractivity.Core.Profanity;
+using DiscordInteractivity.Results;
 using System;
+using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Core
 {
 	public class InteractivityService : IDisposable
 	{
 		internal readonly InteractivityServiceConfig Config;
+
 		internal readonly DiscordSocketClient DiscordClient;
 		internal readonly DiscordClientCallbacks DiscordCallbacks;
+		internal readonly ProfanityHandler ProfanityHandler;
+
+		public event Func<ProfanityResult, Task> ProfanityAlert
+		{
+			add
+			{
+				ProfanityHandler.ProfanityAlert += value;
+			}
+			remove
+			{
+				ProfanityHandler.ProfanityAlert -= value;
+			}
+		}
 
 		internal readonly DateTime StartupTime;
 		internal IUser BotOwner;
@@ -28,16 +45,21 @@ namespace DiscordInteractivity.Core
 		/// </summary>
 		public bool IsDisposed { get; private set; }
 
+		/// <summary>
+		/// Initializes the instance with the default <see cref="InteractivityServiceConfig"/> and a <seealso cref="DiscordSocketClient"/>.
+		/// </summary>
+		/// <param name="discordClient">The Bots <see cref="DiscordSocketClient"/>.</param>
 		public InteractivityService(DiscordSocketClient discordClient) : this(new InteractivityServiceConfig { DiscordClient = discordClient }) { }
-		public InteractivityService(InteractivityServiceConfig config)
+		/// <summary>
+		/// Initializes the instance with a <see cref="InteractivityServiceConfig"/>.
+		/// </summary>
+		/// <param name="interactivityConfig">The config under which the <see cref="InteractivityService"/> should operate.</param>
+		public InteractivityService(InteractivityServiceConfig interactivityConfig)
 		{
-			if (config.DiscordClient is null)
-				throw new ArgumentNullException("The DiscordClient can not be null!");
-
-			Config = config;
+			Config = interactivityConfig;
 			DiscordClient = Config.DiscordClient;
 			StartupTime = DateTime.UtcNow;
-			Config.PagerEmojis = new Emoji[5] { config.StartEmoji, config.BacktEmoji, config.StopEmoji, config.ForwardEmoji, config.EndEmoji };
+			Config.PagerEmojis = new Emoji[5] { interactivityConfig.StartEmoji, interactivityConfig.BacktEmoji, interactivityConfig.StopEmoji, interactivityConfig.ForwardEmoji, interactivityConfig.EndEmoji };
 
 			DiscordCallbacks = new DiscordClientCallbacks(this);
 
@@ -45,6 +67,15 @@ namespace DiscordInteractivity.Core
 
 			if (Config.SetExtensionReferenceAutomatically)
 				InteractivityExtensions.SetInteractivityInstance(this);
+		}
+		/// <summary>
+		/// If this constructor is used it will automatically activate a Profanity Filter.
+		/// </summary>
+		/// <param name="interactivityConfig">The config under which the <see cref="InteractivityService"/> should operate.</param>
+		/// <param name="profanityConfig">The config under which the Profanity Filter should operate.</param>
+		public InteractivityService(InteractivityServiceConfig interactivityConfig, ProfanityHandlerConfig profanityConfig) : this(interactivityConfig)
+		{
+			ProfanityHandler = new ProfanityHandler(this, profanityConfig);
 		}
 
 		/// <summary>
@@ -65,6 +96,7 @@ namespace DiscordInteractivity.Core
 			if (!IsDisposed)
 			{
 				Config.DiscordClient.Ready -= DiscordCallbacks.Ready;
+				ProfanityHandler.Dispose();
 				IsDisposed = true;
 			}
 		}

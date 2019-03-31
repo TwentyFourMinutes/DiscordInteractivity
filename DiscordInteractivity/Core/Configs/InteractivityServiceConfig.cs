@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using DiscordInteractivity.Enums;
 using DiscordInteractivity.Pager;
 using System;
 using System.Collections.Generic;

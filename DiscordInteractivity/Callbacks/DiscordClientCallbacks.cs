@@ -18,7 +18,7 @@ namespace DiscordInteractivity.Callbacks
 			_service.BotOwner = info.Owner;
 
 			if (_service.Config.HasMentionPrefix)
-				_service.Config.CommandPrefixes.Add($"<@{_service.DiscordClient.CurrentUser.Id}>");
+				_service.Config.CommandPrefixes.Add($"<@{_service.DiscordClient.CurrentUser.Id}>");		
 		}
 	}
 }
