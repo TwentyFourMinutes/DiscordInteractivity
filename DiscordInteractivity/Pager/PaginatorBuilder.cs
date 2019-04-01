@@ -41,6 +41,10 @@ namespace DiscordInteractivity.Pager
 		/// </summary>
 		public PaginatorFooter PaginatorFooter { get; set; } = PaginatorFooter.PageNumber;
 
+		/// <summary>
+		/// Creates a new PaginatorBuilder which is linked to an <see cref="IUser"/>.
+		/// </summary>
+		/// <param name="author">This is the User which this instance of the PaginatorBuilder is linked to.</param>
 		public PaginatorBuilder(IUser author)
 		{
 			Author = author;

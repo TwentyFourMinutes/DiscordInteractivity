@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Twenty</Authors>
     <Description>This is an addon for the Discord API Wrapper Discord.Net which adds some useful features as well as some interactivity.</Description>
     <PackageLicenseUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/blob/dev/LICENSE</PackageLicenseUrl>
@@ -11,10 +11,14 @@
     <PackageTags>Discord.Net Discord.Net.Addons Discord.Addons DiscordInteractivity Discord Interactivity Addon</PackageTags>
     <Copyright>Copyright 2019 ©</Copyright>
     <AssemblyName>DiscordInteractivity</AssemblyName>
-    <Version>1.0.0.4</Version>
-    <AssemblyVersion>1.0.0.4</AssemblyVersion>
-    <FileVersion>1.0.0.4</FileVersion>
+    <Version>1.0.1.0</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
     <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>DiscordInteractivity.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

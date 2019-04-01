@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Core
 {
+	/// <summary>
+	/// The core class of DiscordInteractivity which is needed in order to enable most of the features.
+	/// </summary>
 	public class InteractivityService : IDisposable
 	{
 		internal readonly InteractivityServiceConfig Config;
@@ -16,6 +19,9 @@ namespace DiscordInteractivity.Core
 		internal readonly DiscordClientCallbacks DiscordCallbacks;
 		internal readonly ProfanityHandler ProfanityHandler;
 
+		/// <summary>
+		/// This event gets fired when the ProfanityFilter detected any profanity message content.
+		/// </summary>
 		public event Func<ProfanityResult, Task> ProfanityAlert
 		{
 			add
@@ -91,6 +97,10 @@ namespace DiscordInteractivity.Core
 		/// </summary>
 		public string GetCopyrightInfo() => CopyrightInfo;
 
+
+		/// <summary>
+		/// Disposes all members and unsubscribes from all events.
+		/// </summary>
 		public void Dispose()
 		{
 			if (!IsDisposed)

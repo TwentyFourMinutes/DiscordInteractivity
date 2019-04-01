@@ -46,6 +46,9 @@ namespace DiscordInteractivity.Core.Attributes
 			});
 		}, null, 600000, 600000);
 
+		/// <summary>
+		/// This event gets fired as soon as a command is not executed because a user is on cooldown.
+		/// </summary>
 		public static event Func<CooldownAttribute, TimeSpan, Task> UserOnCooldown;
 		
 		/// <summary>
