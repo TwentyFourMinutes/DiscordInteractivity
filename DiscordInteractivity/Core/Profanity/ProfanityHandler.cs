@@ -25,8 +25,11 @@ namespace DiscordInteractivity.Core.Profanity
 		{
 			Config = config;
 			_service = service;
-			_service.DiscordClient.MessageReceived += MessageAction;
-			_service.DiscordClient.MessageUpdated += MessageUpdated;
+			if (Config.ScanNewMessages)
+			{
+				_service.DiscordClient.MessageReceived += MessageAction;
+				_service.DiscordClient.MessageUpdated += MessageUpdated;
+			}
 		}
 
 		private Task MessageAction(SocketMessage arg)
@@ -47,7 +50,7 @@ namespace DiscordInteractivity.Core.Profanity
 		private Task MessageUpdated(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
 			=> MessageAction(arg2);
 
-		private ProfanityResult GetProfanityRating(string content, ProfanityOptions options = ProfanityOptions.Default)
+		internal ProfanityResult GetProfanityRating(string content, ProfanityOptions options = ProfanityOptions.Default)
 		{
 			content = RemoveCharactersFromOptions(content, options);
 
@@ -198,8 +201,11 @@ namespace DiscordInteractivity.Core.Profanity
 		{
 			if (!IsDisposed)
 			{
-				_service.DiscordClient.MessageReceived -= MessageAction;
-				_service.DiscordClient.MessageUpdated -= MessageUpdated;
+				if (Config.ScanNewMessages)
+				{
+					_service.DiscordClient.MessageReceived -= MessageAction;
+					_service.DiscordClient.MessageUpdated -= MessageUpdated;
+				}
 				IsDisposed = true;
 			}
 		}

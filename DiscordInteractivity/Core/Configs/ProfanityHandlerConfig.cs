@@ -37,5 +37,9 @@ namespace DiscordInteractivity.Core
 		/// Gets or sets the distance in the Damerau-Levenshtein algorithm.
 		/// </summary>
 		public double WordDistance { get; set; } = 1;
+		/// <summary>
+		///  Gets or sets whether the ProfanityFilter should Scan new messages or not.
+		/// </summary>
+		public bool ScanNewMessages { get; set; } = true;
 	}
 }

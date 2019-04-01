@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using DiscordInteractivity.Callbacks;
 using DiscordInteractivity.Core.Profanity;
+using DiscordInteractivity.Enums;
 using DiscordInteractivity.Results;
 using System;
 using System.Threading.Tasks;
@@ -97,6 +98,14 @@ namespace DiscordInteractivity.Core
 		/// </summary>
 		public string GetCopyrightInfo() => CopyrightInfo;
 
+		/// <summary>
+		/// Gets a ProfanityResult from the data provided in the <see cref="ProfanityHandlerConfig"/>.
+		/// </summary>
+		/// <param name="content">The content to be rated.</param>
+		/// <param name="options">Additional options which specify the way the rating works.</param>
+		/// <returns></returns>
+		public ProfanityResult GetProfanityRating(string content, ProfanityOptions options = ProfanityOptions.Default)
+			=> ProfanityHandler.GetProfanityRating(content, options);
 
 		/// <summary>
 		/// Disposes all members and unsubscribes from all events.
