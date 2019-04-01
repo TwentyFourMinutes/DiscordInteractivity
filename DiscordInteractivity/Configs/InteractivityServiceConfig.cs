@@ -5,7 +5,7 @@ using DiscordInteractivity.Pager;
 using System;
 using System.Collections.Generic;
 
-namespace DiscordInteractivity.Core
+namespace DiscordInteractivity.Configs
 {
 	public class InteractivityServiceConfig
 	{
@@ -63,5 +63,12 @@ namespace DiscordInteractivity.Core
 		/// Gets or sets the default timeout for Paginators that get deleted after they are sent.
 		/// </summary>
 		public TimeSpan DefaultPagerTimeout { get; set; } = TimeSpan.FromSeconds(30);
+
+
+		public TimeSpan SpamDuration { get; set; } = TimeSpan.FromSeconds(3);
+
+		public int SpamCount { get; set; } = 5;
+
+		public bool SpamProtecion { get; set; } = false;
 	}
 }

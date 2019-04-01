@@ -5,7 +5,7 @@ using DiscordInteractivity.Pager;
 using System;
 using System.Collections.Generic;
 
-namespace DiscordInteractivity.Core
+namespace DiscordInteractivity.Configs
 {
 	public class ProfanityHandlerConfig
 	{

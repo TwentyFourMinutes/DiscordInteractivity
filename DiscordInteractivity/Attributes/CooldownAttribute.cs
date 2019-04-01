@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DiscordInteractivity.Core.Attributes
+namespace DiscordInteractivity.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 	public sealed class CooldownAttribute : PreconditionAttribute
@@ -26,25 +26,9 @@ namespace DiscordInteractivity.Core.Attributes
 		/// </summary>
 		public bool IsToBeCleared = true;
 
-		private ConcurrentDictionary<ulong, TimeoutData> _cooldowns;
+		internal ConcurrentDictionary<ulong, TimeoutData> Cooldowns;
 
-		private static readonly List<CooldownAttribute> _cooldownAttributes = new List<CooldownAttribute>();
-
-		private static readonly Timer _timer = new Timer(_ =>
-		{
-			Task.Run(() =>
-			{
-				foreach (var attribute in _cooldownAttributes)
-				{
-					if (attribute.IsToBeCleared)
-						foreach (var cooldown in attribute._cooldowns)
-						{
-							if (cooldown.Value.NextReset <= DateTime.UtcNow)
-								attribute._cooldowns.TryRemove(cooldown.Key, out TimeoutData _);
-						}
-				}
-			});
-		}, null, 600000, 600000);
+		internal static readonly List<CooldownAttribute> CooldownAttributes = new List<CooldownAttribute>();
 
 		/// <summary>
 		/// This event gets fired as soon as a command is not executed because a user is on cooldown.
@@ -61,7 +45,7 @@ namespace DiscordInteractivity.Core.Attributes
 		{
 			Count = count;
 
-			_cooldowns = new ConcurrentDictionary<ulong, TimeoutData>();
+			Cooldowns = new ConcurrentDictionary<ulong, TimeoutData>();
 
 			switch (measure)
 			{
@@ -76,12 +60,12 @@ namespace DiscordInteractivity.Core.Attributes
 					break;
 			}
 
-			_cooldownAttributes.Add(this);
+			CooldownAttributes.Add(this);
 		}
 
 		public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
 		{
-			if (_cooldowns.TryGetValue(context.User.Id, out TimeoutData data))
+			if (Cooldowns.TryGetValue(context.User.Id, out TimeoutData data))
 			{
 				if (data.InvokeCount >= Count)
 				{
@@ -102,7 +86,7 @@ namespace DiscordInteractivity.Core.Attributes
 			}
 			else
 			{
-				_cooldowns.TryAdd(context.User.Id, new TimeoutData { NextReset = DateTime.UtcNow.Add(Every), InvokeCount = 1 });
+				Cooldowns.TryAdd(context.User.Id, new TimeoutData { NextReset = DateTime.UtcNow.Add(Every), InvokeCount = 1 });
 			}
 			return Task.FromResult(PreconditionResult.FromSuccess());
 		}

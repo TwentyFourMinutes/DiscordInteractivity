@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using DiscordInteractivity.Configs;
 using DiscordInteractivity.Enums;
 using DiscordInteractivity.Results;
 
-namespace DiscordInteractivity.Core.Profanity
+namespace DiscordInteractivity.Core.Handlers
 {
 	internal class ProfanityHandler : IDisposable
 	{

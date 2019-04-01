@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiscordInteractivity.Core.Attributes
+namespace DiscordInteractivity.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 	public class RequireRoleAttribute : PreconditionAttribute

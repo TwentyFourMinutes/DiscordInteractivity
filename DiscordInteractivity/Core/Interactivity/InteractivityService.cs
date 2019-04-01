@@ -1,10 +1,13 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using DiscordInteractivity.Attributes;
 using DiscordInteractivity.Callbacks;
-using DiscordInteractivity.Core.Profanity;
+using DiscordInteractivity.Configs;
+using DiscordInteractivity.Core.Handlers;
 using DiscordInteractivity.Enums;
 using DiscordInteractivity.Results;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Core
@@ -19,6 +22,9 @@ namespace DiscordInteractivity.Core
 		internal readonly DiscordSocketClient DiscordClient;
 		internal readonly DiscordClientCallbacks DiscordCallbacks;
 		internal readonly ProfanityHandler ProfanityHandler;
+		internal readonly SpamHandler SpamHandler;
+
+		internal readonly Timer ClearingTimer;
 
 		/// <summary>
 		/// This event gets fired when the ProfanityFilter detected any profanity message content.
@@ -48,7 +54,7 @@ namespace DiscordInteractivity.Core
 		}
 
 		/// <summary>
-		/// Determines whether this instance is already Dispoed or not.
+		/// Determines whether this instance is already Disposed or not.
 		/// </summary>
 		public bool IsDisposed { get; private set; }
 
@@ -74,6 +80,34 @@ namespace DiscordInteractivity.Core
 
 			if (Config.SetExtensionReferenceAutomatically)
 				InteractivityExtensions.SetInteractivityInstance(this);
+			if (Config.SpamProtecion)
+				SpamHandler = new SpamHandler(this);
+
+			ClearingTimer = new Timer(_ =>
+			{
+				Task.Run(() =>
+				{
+					foreach (var attribute in CooldownAttribute.CooldownAttributes)
+					{
+						if (attribute.IsToBeCleared)
+							foreach (var cooldown in attribute.Cooldowns)
+							{
+								if (cooldown.Value.NextReset <= DateTime.UtcNow)
+									attribute.Cooldowns.TryRemove(cooldown.Key, out TimeoutData _);
+							}
+					}
+					if (SpamHandler != null)
+					{
+						foreach (var spaminfo in SpamHandler.SpamInformation)
+						{
+							if (spaminfo.Value.SpamReset <= DateTime.UtcNow)
+							{
+								SpamHandler.SpamInformation.TryRemove(spaminfo.Key, out var _);
+							}
+						}
+					}
+				});
+			}, null, 600000, 600000);
 		}
 		/// <summary>
 		/// If this constructor is used it will automatically activate a Profanity Filter.

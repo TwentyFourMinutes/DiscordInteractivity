@@ -20,6 +20,11 @@ namespace DiscordInteractivity.Pager
 
 		private IUserMessage _message;
 
+		/// <summary>
+		/// Determines whether this instance is already Disposed or not.
+		/// </summary>
+		public bool IsDisposed { get; private set; }
+
 		internal Paginator(PaginatorBuilder paginator)
 		{
 			_paginator = paginator;
@@ -38,6 +43,8 @@ namespace DiscordInteractivity.Pager
 
 			_ = Task.Delay(timeOut ?? interactivity.Config.DefaultPagerTimeout).ContinueWith(_ =>
 			{
+				if (IsDisposed)
+					return;
 				_message.TryDeleteAsync().ConfigureAwait(false);
 				this.Dispose();
 			}).ConfigureAwait(false);
@@ -150,9 +157,13 @@ namespace DiscordInteractivity.Pager
 
 		public void Dispose()
 		{
-			_interactivity.DiscordClient.ReactionAdded -= ReactionChanged;
-			_interactivity.DiscordClient.ReactionRemoved -= ReactionChanged;
-			_paginator = null;
+			if (!IsDisposed)
+			{
+				IsDisposed = true;
+				_interactivity.DiscordClient.ReactionAdded -= ReactionAdded;
+				_interactivity.DiscordClient.ReactionRemoved -= ReactionChanged;
+				_paginator = null;
+			}
 		}
 	}
 }
