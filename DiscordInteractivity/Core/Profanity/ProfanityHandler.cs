@@ -52,7 +52,7 @@ namespace DiscordInteractivity.Core.Profanity
 			content = RemoveCharactersFromOptions(content, options);
 
 			List<string> ProfanityIndicators = Config.ProfanityIndicators.Where(x => content.Contains(x)).ToList();
-			List<(string ProfanityWord, string Assumption)> BadWords = new List<(string, string)>();
+			List<(string ProfanityWord, string Assumption)> ProfainityWords = new List<(string, string)>();
 
 			double rating = 0;
 
@@ -60,6 +60,8 @@ namespace DiscordInteractivity.Core.Profanity
 			{
 				rating += Config.IndicatorAdditon;
 			}
+
+			var ignoreDuplicates = options.HasFlag(ProfanityOptions.IgnoreDuplicateAssumptions);
 
 			if (options.HasFlag(ProfanityOptions.CheckForSimilarity))
 			{
@@ -71,14 +73,30 @@ namespace DiscordInteractivity.Core.Profanity
 					{
 						foreach (var word in words)
 						{
+							if (ignoreDuplicates && ProfainityWords.Any(x => x.Assumption == word))
+								continue;
+
 							var distance = GetDistance(badword.Key, word);
+
+							var partlyMatch = word.Contains(badword.Key);
 
 							if (distance <= Config.WordDistance)
 							{
-								BadWords.Add((badword.Key, word));
-								rating += GetPositive(badword.Value - 1);
-								if (rating >= Config.TriggerOn && Config.TriggerOn != - 1)
-									return new ProfanityResult(rating, ProfanityIndicators, BadWords, (distance == 0) ? ProfanityMatch.FullMatch : ProfanityMatch.PartlyMatch);
+								ProfainityWords.Add((badword.Key, word));
+
+								rating += (distance == 0) ? badword.Value : GetPositive(badword.Value - 1);
+
+								if (rating >= Config.TriggerOn && Config.TriggerOn != -1)
+									return new ProfanityResult(rating, ProfanityIndicators, ProfainityWords, (distance == 0) ? ProfanityMatch.FullMatch : ProfanityMatch.SimilarMatch);
+							}
+							else if (partlyMatch)
+							{
+								ProfainityWords.Add((badword.Key, word));
+
+								rating += GetPositive(badword.Value - 0.5);
+
+								if (rating >= Config.TriggerOn && Config.TriggerOn != -1)
+									return new ProfanityResult(rating, ProfanityIndicators, ProfainityWords, ProfanityMatch.PartlyMatch);
 							}
 						}
 					}
@@ -94,16 +112,21 @@ namespace DiscordInteractivity.Core.Profanity
 
 							if (distance <= Config.WordDistance)
 							{
-								BadWords.Add((badword.Key, word));
+								if (ignoreDuplicates && ProfainityWords.Any(x => x.Assumption == word))
+									continue;
+
+								ProfainityWords.Add((badword.Key, word));
+
 								rating += GetPositive(badword.Value - 1);
+
 								if (rating >= Config.TriggerOn && Config.TriggerOn != -1)
-									return new ProfanityResult(rating, ProfanityIndicators, BadWords, (distance == 0) ? ProfanityMatch.FullMatch : ProfanityMatch.PartlyMatch);
+									return new ProfanityResult(rating, ProfanityIndicators, ProfainityWords, (distance == 0) ? ProfanityMatch.FullMatch : ProfanityMatch.PartlyMatch);
 							}
 						}
 					}
 				}
 			}
-			return new ProfanityResult(rating, ProfanityIndicators, BadWords, ProfanityMatch.NoMatch);
+			return new ProfanityResult(rating, ProfanityIndicators, ProfainityWords, ProfanityMatch.NoMatch);
 		}
 		private string RemoveCharactersFromOptions(string content, ProfanityOptions options)
 		{

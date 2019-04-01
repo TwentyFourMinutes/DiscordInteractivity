@@ -6,6 +6,6 @@ namespace DiscordInteractivity.Enums
 {
 	public enum ProfanityMatch
 	{
-		FullMatch, PartlyMatch, NoMatch
+		FullMatch, SimilarMatch, PartlyMatch, NoMatch
 	}
 }

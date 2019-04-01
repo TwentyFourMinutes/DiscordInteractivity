@@ -10,6 +10,7 @@ namespace DiscordInteractivity.Enums
 		CheckWithoutWhitespaces = 1,
 		RemoveNoneAlphanumericCharcaters = 2,
 		CheckForSimilarity = 4,
-		Default = 2 | 4
+		IgnoreDuplicateAssumptions = 8,
+		Default = 2 | 4 | 8
 	}
 }

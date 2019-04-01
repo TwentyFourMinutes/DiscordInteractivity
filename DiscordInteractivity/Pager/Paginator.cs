@@ -68,7 +68,7 @@ namespace DiscordInteractivity.Pager
 
 		private async Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
 		{
-			if (_paginator.RemoveOtherReactions && (_paginator.Author.Id != arg3.UserId || !_interactivity.Config.PagerEmojis.Any(x => x.Name == arg3.Emote.Name)))
+			if (_paginator.RemoveOtherReactions && arg3.UserId != _interactivity.DiscordClient.CurrentUser.Id && (_paginator.Author.Id != arg3.UserId || !_interactivity.Config.PagerEmojis.Any(x => x.Name == arg3.Emote.Name)))
 			{
 				if (arg3.User.IsSpecified)
 				{

@@ -45,6 +45,7 @@ namespace DiscordInteractivity.Core
 		/// Sends a file to the current channel with an optional caption and deletes it after the <see cref="TimeSpan"/> elapsed.
 		/// </summary>
 		/// <param name="stream">The stream of the file to be sent.</param>	
+		/// <param name="filename">The name of the attachment.</param>
 		/// <param name="text">The message to be sent.</param>
 		/// <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
 		/// <param name="embed">The <see cref="Embed"/> to be sent.</param>

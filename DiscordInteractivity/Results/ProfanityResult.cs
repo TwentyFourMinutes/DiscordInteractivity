@@ -30,11 +30,11 @@ namespace DiscordInteractivity.Results
 		/// </summary>
 		public readonly ProfanityMatch ProfanityMatch;
 
-		internal ProfanityResult(double profanityRating, List<string> profanityIndicators, List<(string ProfanityWord, string Assumption)> badWords, ProfanityMatch match)
+		internal ProfanityResult(double profanityRating, List<string> profanityIndicators, List<(string ProfanityWord, string Assumption)> profanityWords, ProfanityMatch match)
 		{
 			ProfanityRating = profanityRating;
 			ProfanityIndicators = profanityIndicators;
-			ProfanityWords = badWords;
+			ProfanityWords = profanityWords;
 			ProfanityMatch = match;
 		}
 	}
