@@ -1,6 +1,7 @@
 ﻿using Discord.WebSocket;
 using DiscordInteractivity.Configs;
 using DiscordInteractivity.Core;
+using DiscordInteractivity.Core.Handlers;
 using DiscordInteractivity.Enums;
 using System;
 using System.Collections.Generic;
@@ -26,20 +27,15 @@ namespace DiscordInteractivity.Results
 		/// </summary>
 		public readonly List<string> ProfanityIndicators;
 		/// <summary>
-		/// Gets the <see cref="ProfanityHandlerConfig.ProfanityWords"/> which are found in the message content.
+		/// Gets the <see cref="ProfanityHandlerConfig.ProfanityWords"/> which are found in the message content and their <seealso cref="ProfanityMatch"/>."/>.
 		/// </summary>
-		public readonly List<(string ProfanityWord, string Assumption)> ProfanityWords;
-		/// <summary>
-		/// Determines what kind of Match the message content has.
-		/// </summary>
-		public readonly ProfanityMatch ProfanityMatch;
+		public readonly List<ProfanityData> ProfanityWords;
 
-		internal ProfanityResult(double profanityRating, List<string> profanityIndicators, List<(string ProfanityWord, string Assumption)> profanityWords, ProfanityMatch match)
+		internal ProfanityResult(double profanityRating, List<string> profanityIndicators, List<ProfanityData> profanityWords)
 		{
 			ProfanityRating = profanityRating;
 			ProfanityIndicators = profanityIndicators;
 			ProfanityWords = profanityWords;
-			ProfanityMatch = match;
 		}
 	}
 }
