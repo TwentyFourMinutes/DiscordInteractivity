@@ -69,6 +69,6 @@ namespace DiscordInteractivity.Configs
 
 		public int SpamCount { get; set; } = 5;
 
-		public bool SpamProtecion { get; set; } = false;
+		public bool SpamDetection { get; set; } = false;
 	}
 }

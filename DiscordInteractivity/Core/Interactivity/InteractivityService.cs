@@ -7,6 +7,7 @@ using DiscordInteractivity.Core.Handlers;
 using DiscordInteractivity.Enums;
 using DiscordInteractivity.Results;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,6 +39,18 @@ namespace DiscordInteractivity.Core
 			remove
 			{
 				ProfanityHandler.ProfanityAlert -= value;
+			}
+		}
+
+		public event Func<SocketGuildUser, List<SocketUserMessage>, Task> SpamDetected
+		{
+			add
+			{
+				SpamHandler.SpamDetected += value;
+			}
+			remove
+			{
+				SpamHandler.SpamDetected -= value;
 			}
 		}
 
@@ -80,7 +93,7 @@ namespace DiscordInteractivity.Core
 
 			if (Config.SetExtensionReferenceAutomatically)
 				InteractivityExtensions.SetInteractivityInstance(this);
-			if (Config.SpamProtecion)
+			if (Config.SpamDetection)
 				SpamHandler = new SpamHandler(this);
 
 			ClearingTimer = new Timer(_ =>

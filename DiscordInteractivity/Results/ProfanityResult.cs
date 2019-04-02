@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using DiscordInteractivity.Configs;
 using DiscordInteractivity.Core;
 using DiscordInteractivity.Enums;
 using System;
@@ -12,7 +13,7 @@ namespace DiscordInteractivity.Results
 		/// <summary>
 		/// Gets the original Message which contains most likley profanity content.
 		/// </summary>
-		public SocketMessage Message { get; internal set; }
+		public SocketUserMessage Message { get; internal set; }
 		/// <summary>
 		/// Gets the profanity rating to the message content which is based on the <see cref="ProfanityIndicators"/> and <seealso cref="ProfanityWords"/>. Higher score indicates that it is more likley to be profanity content.
 		/// </summary>

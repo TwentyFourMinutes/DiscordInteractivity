@@ -13,7 +13,7 @@ namespace DiscordInteractivity.Core.Handlers
 
 		internal readonly ConcurrentDictionary<ulong, SpamData> SpamInformation;
 
-		internal event Func<SocketUser, Task> SpamDetected;
+		internal event Func<SocketGuildUser, List<SocketUserMessage>, Task> SpamDetected;
 
 		/// <summary>
 		/// Determines whether this instance is already Disposed or not.
@@ -30,29 +30,30 @@ namespace DiscordInteractivity.Core.Handlers
 
 		private Task MessageReceived(SocketMessage arg)
 		{
-			if (arg.Author.Id == _service.DiscordClient.CurrentUser.Id)
+			if (arg.Author.Id == _service.DiscordClient.CurrentUser.Id || !(arg is SocketUserMessage message))
 				return Task.CompletedTask;
 
+			
 			if (SpamInformation.TryGetValue(arg.Author.Id, out var info))
 			{
-				if (info.MessageCount >= _service.Config.SpamCount)
+				if (info.Messages.Count >= _service.Config.SpamCount)
 				{
 					if (info.SpamReset <= DateTime.UtcNow)
 					{
-						info.MessageCount = 0;
+						info.Messages.Clear();
 						info.SpamReset = DateTime.UtcNow.Add(_service.Config.SpamDuration);
 					}
 					else
 					{
-						_ = SpamDetected?.Invoke(arg.Author);
+						_ = SpamDetected?.Invoke((SocketGuildUser)arg.Author, info.Messages);
 					}
 				}
 
-				info.MessageCount++;
+				info.Messages.Add(message);
 			}
 			else
 			{
-				SpamInformation.TryAdd(arg.Author.Id, new SpamData { SpamReset = DateTime.UtcNow.Add(_service.Config.SpamDuration), MessageCount = 1 });
+				SpamInformation.TryAdd(arg.Author.Id, new SpamData { SpamReset = DateTime.UtcNow.Add(_service.Config.SpamDuration), Messages = new List<SocketUserMessage>()});
 			}
 			return Task.CompletedTask;
 		}
@@ -69,6 +70,6 @@ namespace DiscordInteractivity.Core.Handlers
 	internal class SpamData
 	{
 		internal DateTime SpamReset { get; set; }
-		internal int MessageCount { get; set; }
+		internal List<SocketUserMessage> Messages { get; set; }
 	}
 }
