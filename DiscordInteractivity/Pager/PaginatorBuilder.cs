@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace DiscordInteractivity.Pager
 {
+	/// <summary>
+	/// The <see cref="PaginatorBuilder"/> is used to create paginated messages.
+	/// </summary>
 	public class PaginatorBuilder
 	{
 		/// <summary>

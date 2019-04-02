@@ -7,6 +7,9 @@ using System.Collections.Generic;
 
 namespace DiscordInteractivity.Configs
 {
+	/// <summary>
+	/// The config for a profanity handler.
+	/// </summary>
 	public class ProfanityHandlerConfig
 	{
 		/// <summary>

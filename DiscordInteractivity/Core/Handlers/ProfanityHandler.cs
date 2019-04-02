@@ -17,7 +17,7 @@ namespace DiscordInteractivity.Core.Handlers
 		private readonly InteractivityService _service;
 
 		private static readonly char[] _splits = { ' ' };
-
+		
 		public bool IsDisposed { get; private set; }
 
 		internal event Func<ProfanityResult, Task> ProfanityAlert;

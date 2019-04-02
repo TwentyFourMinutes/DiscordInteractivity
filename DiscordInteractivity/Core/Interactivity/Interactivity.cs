@@ -12,10 +12,19 @@ using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Core
 {
+	/// <summary>
+	/// Inherit from this class to get all sort of useful features.
+	/// </summary>
 	public class Interactivity : Interactivity<SocketCommandContext> { }
 
+	/// <summary>
+	/// Inherit from this class to get all sort of useful features.
+	/// </summary>
 	public class Interactivity<T> : ModuleBase<T> where T : SocketCommandContext
 	{
+		/// <summary>
+		/// Your <see cref="InteractivityService"/> instance you provided in the dependency injection.
+		/// </summary>
 		public InteractivityService InteractivityService { get; set; }
 
 		/// <summary>

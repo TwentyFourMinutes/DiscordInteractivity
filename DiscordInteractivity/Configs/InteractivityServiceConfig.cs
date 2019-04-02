@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using DiscordInteractivity.Core;
 using DiscordInteractivity.Enums;
 using DiscordInteractivity.Pager;
 using System;
@@ -7,6 +8,9 @@ using System.Collections.Generic;
 
 namespace DiscordInteractivity.Configs
 {
+	/// <summary>
+	/// The config for a interactivity service handler.
+	/// </summary>
 	public class InteractivityServiceConfig
 	{
 		/// <summary>
@@ -64,11 +68,17 @@ namespace DiscordInteractivity.Configs
 		/// </summary>
 		public TimeSpan DefaultPagerTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-
+		/// <summary>
+		/// Gets or sets the <see cref="TimeSpan"/> before the spam detection resets the <seealso cref="SpamCount"/> of a user.
+		/// </summary>
 		public TimeSpan SpamDuration { get; set; } = TimeSpan.FromSeconds(3);
-
+		/// <summary>
+		/// Gets or sets the amount of messages need to be send in the <see cref="SpamDuration"/> in order to trigger the spam detection.
+		/// </summary>
 		public int SpamCount { get; set; } = 5;
-
+		/// <summary>
+		/// Gets or sets whether the spam protection should be enabled or not.
+		/// </summary>
 		public bool SpamDetection { get; set; } = false;
 	}
 }

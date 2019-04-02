@@ -8,6 +8,9 @@ using System.Text;
 
 namespace DiscordInteractivity.Results
 {
+	/// <summary>
+	/// This is the result of the profanity rating which contaisn information about the rating.
+	/// </summary>
 	public class ProfanityResult
 	{
 		/// <summary>
@@ -23,7 +26,7 @@ namespace DiscordInteractivity.Results
 		/// </summary>
 		public readonly List<string> ProfanityIndicators;
 		/// <summary>
-		/// Gets the <see cref="ProfanityHandlerConfig.ProfanityWords"/> which are found in the message content. If the <seealso cref="ProfanityHandlerConfig.ProfanityOptions"/> are set to <seealso cref="ProfanityOptions.CheckForSimilarity"/> the Assumption is the detected word and the ProfanityWord is the original word from the <seealso cref="ProfanityHandlerConfig.ProfanityWords"/> Dictonary.
+		/// Gets the <see cref="ProfanityHandlerConfig.ProfanityWords"/> which are found in the message content.
 		/// </summary>
 		public readonly List<(string ProfanityWord, string Assumption)> ProfanityWords;
 		/// <summary>

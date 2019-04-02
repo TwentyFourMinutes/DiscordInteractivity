@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Pager
 {
+	/// <summary>
+	/// The finalized paginated message handler.
+	/// </summary>
 	public class Paginator : IDisposable
 	{
 		private PaginatorBuilder _paginator;
@@ -154,7 +157,10 @@ namespace DiscordInteractivity.Pager
 
 			return eb.Build();
 		}
-
+		
+		/// <summary>
+		/// Unsubscribes from all events.
+		/// </summary>
 		public void Dispose()
 		{
 			if (!IsDisposed)

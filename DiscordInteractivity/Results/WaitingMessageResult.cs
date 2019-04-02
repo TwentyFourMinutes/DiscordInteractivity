@@ -3,6 +3,9 @@ using DiscordInteractivity.Enums;
 
 namespace DiscordInteractivity.Results
 {
+	/// <summary>
+	/// The result of waiting on a message.
+	/// </summary>
 	public class WaitingMessageResult
 	{
 		/// <summary>

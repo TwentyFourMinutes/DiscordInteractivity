@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Attributes
 {
+	/// <summary>
+	/// Sets a ratelimit for a command or a module for each user.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
 	public sealed class CooldownAttribute : PreconditionAttribute
 	{

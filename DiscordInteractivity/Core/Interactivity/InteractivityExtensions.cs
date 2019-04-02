@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Core
 {
+	/// <summary>
+	/// Provides all sort of useful extensions.
+	/// </summary>
 	public static class InteractivityExtensions
 	{
 		private static InteractivityService _InteractivityInstance;

@@ -42,6 +42,9 @@ namespace DiscordInteractivity.Core
 			}
 		}
 
+		/// <summary>
+		/// This event gets fired as soon as the spam detection system detects any spam.
+		/// </summary>
 		public event Func<SocketGuildUser, List<SocketUserMessage>, Task> SpamDetected
 		{
 			add
@@ -163,6 +166,7 @@ namespace DiscordInteractivity.Core
 			{
 				Config.DiscordClient.Ready -= DiscordCallbacks.Ready;
 				ProfanityHandler.Dispose();
+				SpamHandler.Dispose();
 				IsDisposed = true;
 			}
 		}
