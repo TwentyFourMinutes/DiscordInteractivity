@@ -34,5 +34,5 @@ If you need any further help regarding to the Addon feel free to send me a messa
 
 - This package is inspired by [foxbot](https://github.com/foxbot) and his [Discord.Addons.Interactive](https://github.com/foxbot/Discord.Addons.Interactive) package.
 
-- The [code](https://gist.github.com/wickedshimmy/449595) of the [GetDistance](github.com/TwentyFourMinutes/DiscordInteractivity/blob/dev/DiscordInteractivity/Core/Profanity/ProfanityHandler.cs) method which implements the Damerau-Levenshtein algorithm is written by [wickedshimmy](https://gist.github.com/wickedshimmy).
+  - The [code](https://gist.github.com/wickedshimmy/449595) of the [GetDistance](https://github.com/TwentyFourMinutes/DiscordInteractivity/blob/dev/DiscordInteractivity/Core/Handlers/ProfanityHandler.cs) method which implements the Damerau-Levenshtein algorithm is written by [wickedshimmy](https://gist.github.com/wickedshimmy).
 

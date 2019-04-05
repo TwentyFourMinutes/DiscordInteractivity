@@ -31,7 +31,11 @@ namespace DiscordInteractivity.Configs
 		/// <summary>
 		/// Gets or sets a trigger where the profanity filter should immediately hit. If the value is set to -1 it will always check all <see cref="ProfanityWords"/>.
 		/// </summary>
-		public double TriggerOn { get; set; } = -1;
+		public double EarlyTriggerOn { get; set; } = -1;
+		/// <summary>
+		/// Gets or sets the minimum where the profanity filter should fire.
+		/// </summary>
+		public double TriggerOn { get; set; } = 1.5;
 		/// <summary>
 		/// Gets or sets a value how much an <see cref="ProfanityIndicators"/> should count to the profanity rating.
 		/// </summary>

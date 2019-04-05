@@ -80,5 +80,10 @@ namespace DiscordInteractivity.Configs
 		/// Gets or sets whether the spam protection should be enabled or not.
 		/// </summary>
 		public bool SpamDetection { get; set; } = false;
+
+		/// <summary>
+		/// Gets or sets the role position from where on the spam detection and the profanity rating should not check.
+		/// </summary>
+		public int IngoreRolesPosition { get; set; } = -1;
 	}
 }

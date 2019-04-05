@@ -35,12 +35,12 @@ namespace DiscordInteractivity.Core.Handlers
 
 		private Task MessageAction(SocketMessage arg)
 		{
-			if (arg.Author.Id == _service.DiscordClient.CurrentUser.Id || (Config.CheckCommands && _service.Config.CommandPrefixes.Any(x => arg.Content.StartsWith(x))) || !(arg is SocketUserMessage message))
+			if (arg.Author.Id == _service.DiscordClient.CurrentUser.Id || (Config.CheckCommands && _service.Config.CommandPrefixes.Any(x => arg.Content.StartsWith(x))) || !(arg is SocketUserMessage message) || (_service.Config.IngoreRolesPosition != -1 && ((SocketGuildUser)message.Author).Roles.Max(x => x.Position) < _service.Config.IngoreRolesPosition))
 				return Task.CompletedTask;
 
 			var result = GetProfanityRating(message.Content, Config.ProfanityOptions);
 
-			if (result.ProfanityRating > 0)
+			if (result.ProfanityRating >= Config.TriggerOn)
 			{
 				result.Message = message;
 				_ = ProfanityAlert?.Invoke(result);
@@ -93,7 +93,7 @@ namespace DiscordInteractivity.Core.Handlers
 
 							rating += (distance == 0) ? badword.Value : GetPositive(badword.Value - 2);
 
-							if (rating >= Config.TriggerOn && Config.TriggerOn != -1)
+							if (rating >= Config.EarlyTriggerOn && Config.EarlyTriggerOn != -1)
 								return new ProfanityResult(rating, ProfanityIndicators, ProfanityWords);
 						}
 						else if (partlyMatch)
@@ -107,7 +107,7 @@ namespace DiscordInteractivity.Core.Handlers
 
 							rating += GetPositive(badword.Value - 1);
 
-							if (rating >= Config.TriggerOn && Config.TriggerOn != -1)
+							if (rating >= Config.EarlyTriggerOn && Config.EarlyTriggerOn != -1)
 								return new ProfanityResult(rating, ProfanityIndicators, ProfanityWords);
 						}
 					}
@@ -136,7 +136,7 @@ namespace DiscordInteractivity.Core.Handlers
 
 							rating += GetPositive(badword.Value - 1);
 
-							if (rating >= Config.TriggerOn && Config.TriggerOn != -1)
+							if (rating >= Config.EarlyTriggerOn && Config.EarlyTriggerOn != -1)
 								return new ProfanityResult(rating, ProfanityIndicators, ProfanityWords);
 						}
 					}
@@ -145,7 +145,7 @@ namespace DiscordInteractivity.Core.Handlers
 
 			if (words.Count() == 1)
 			{
-				rating += (ProfanityWords.FirstOrDefault().MatchType == ProfanityMatch.FullMatch) ? 1 : 0.5;
+				rating += (ProfanityWords.FirstOrDefault()?.MatchType == ProfanityMatch.FullMatch) ? 1 : 0.5;
 			}
 
 			return new ProfanityResult(rating, ProfanityIndicators, ProfanityWords);

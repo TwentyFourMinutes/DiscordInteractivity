@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,9 +31,8 @@ namespace DiscordInteractivity.Core.Handlers
 
 		private Task MessageReceived(SocketMessage arg)
 		{
-			if (arg.Author.Id == _service.DiscordClient.CurrentUser.Id || !(arg is SocketUserMessage message))
+			if (arg.Author.Id == _service.DiscordClient.CurrentUser.Id || !(arg is SocketUserMessage message) || (_service.Config.IngoreRolesPosition != -1 && ((SocketGuildUser)message.Author).Roles.Max(x => x.Position) < _service.Config.IngoreRolesPosition))
 				return Task.CompletedTask;
-
 			
 			if (SpamInformation.TryGetValue(arg.Author.Id, out var info))
 			{
@@ -40,13 +40,14 @@ namespace DiscordInteractivity.Core.Handlers
 				{
 					if (info.SpamReset <= DateTime.UtcNow)
 					{
-						info.Messages.Clear();
 						info.SpamReset = DateTime.UtcNow.Add(_service.Config.SpamDuration);
 					}
 					else
 					{
 						_ = SpamDetected?.Invoke((SocketGuildUser)arg.Author, info.Messages);
 					}
+
+					info.Messages.Clear();
 				}
 
 				info.Messages.Add(message);
