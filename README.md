@@ -1,3 +1,7 @@
+# This repository is deprecated please use [Discord.UtilityAddon](https://github.com/TwentyFourMinutes/Discord.UtilityAddon) and [Discord.InteractivityAddon](https://github.com/Playwo/Discord.InteractivityAddon)
+
+
+
 # DiscordInteractivity
 
 [![NuGet](https://img.shields.io/nuget/vpre/DiscordInteractivity.svg?style=plastic)](https://www.nuget.org/packages/DiscordInteractivity)

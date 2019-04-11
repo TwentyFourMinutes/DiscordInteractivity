@@ -28,5 +28,4 @@
     <PackageReference Include="Discord.Net.Rest" Version="2.0.1" />
     <PackageReference Include="Discord.Net.WebSocket" Version="2.0.1" />
   </ItemGroup>
-
 </Project>
