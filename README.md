@@ -1,4 +1,4 @@
-# This repository is deprecated please use [Discord.UtilityAddon](https://github.com/TwentyFourMinutes/Discord.UtilityAddon) and [Discord.InteractivityAddon](https://github.com/Playwo/Discord.InteractivityAddon)
+# This repository is deprecated please use [Discord.InteractivityAddon](https://github.com/Playwo/Discord.InteractivityAddon)
 
 
 
