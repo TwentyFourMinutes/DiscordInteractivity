@@ -1,48 +1,52 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Discord.WebSocket;
 
-namespace DiscordInteractivity.Attributes
+namespace DiscordInteractivity.Attributes;
+
+/// <summary>
+/// Requires a user to match these roles in order to execute a command.
+/// </summary>
+/// <remarks>
+/// Creates a new <see cref="RequireRoleAttribute"/> with the role ids provided.
+/// </remarks>
+/// <param name="roleIds">The roles which the user needs to match.</param>
+[AttributeUsage(
+    AttributeTargets.Class | AttributeTargets.Method,
+    AllowMultiple = false,
+    Inherited = false
+)]
+public class RequireRoleAttribute(params ulong[] roleIds) : PreconditionAttribute
 {
     /// <summary>
-    /// Requires a user to match these roles in order to execute a command.
+    /// Determines whether all role ids provided must match the user or not.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class RequireRoleAttribute : PreconditionAttribute
+    public bool MatchAllRoles = false;
+
+    public override Task<PreconditionResult> CheckPermissionsAsync(
+        ICommandContext context,
+        CommandInfo command,
+        IServiceProvider services
+    )
     {
-        private readonly ulong[] _roleIds;
+        PreconditionResult result;
 
-        /// <summary>
-        /// Determines whether all role ids provided must match the user or not.
-        /// </summary>
-        public bool MatchAllRoles = false;
-
-        /// <summary>
-        /// Creates a new <see cref="RequireRoleAttribute"/> with the role ids provided.
-        /// </summary>
-        /// <param name="roleIds">The roles which the user needs to match.</param>
-        public RequireRoleAttribute(params ulong[] roleIds)
+        if (context.User is not SocketGuildUser user)
         {
-            _roleIds = roleIds;
+            result = PreconditionResult.FromError("Command not invoked in a Guild.");
+        }
+        else if (!MatchAllRoles && roleIds.Any(x => user.Roles.Any(y => y.Id == x)))
+        {
+            result = PreconditionResult.FromSuccess();
+        }
+        else if (MatchAllRoles && roleIds.All(x => user.Roles.Any(y => y.Id == x)))
+        {
+            result = PreconditionResult.FromSuccess();
+        }
+        else
+        {
+            result = PreconditionResult.FromError("User doesn't match any roles.");
         }
 
-        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
-        {
-            if (!(context.User is SocketGuildUser user))
-                return Task.FromResult(PreconditionResult.FromError("Command not invoked in a Guild."));
-
-            if (!MatchAllRoles && _roleIds.Any(x => user.Roles.Any(y => y.Id == x)))
-            {
-                return Task.FromResult(PreconditionResult.FromSuccess());
-            }
-            else if (MatchAllRoles && _roleIds.All(x => user.Roles.Any(y => y.Id == x)))
-            {
-                return Task.FromResult(PreconditionResult.FromSuccess());
-            }
-
-            return Task.FromResult(PreconditionResult.FromError("User doesn't match any roles."));
-        }
+        return Task.FromResult(result);
     }
 }

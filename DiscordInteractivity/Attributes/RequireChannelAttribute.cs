@@ -1,35 +1,31 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Discord.Commands;
+﻿using Discord.Commands;
 
-namespace DiscordInteractivity.Attributes
+namespace DiscordInteractivity.Attributes;
+
+/// <summary>
+/// Requires the command to be executed in a specific channel.
+/// </summary>
+/// <remarks>
+/// Creates a new <see cref="RequireChannelAttribute"/> with the channel ids provided.
+/// </remarks>
+/// <param name="channelIds">Channels where the command can be executed in.</param>
+[AttributeUsage(
+    AttributeTargets.Class | AttributeTargets.Method,
+    AllowMultiple = false,
+    Inherited = false
+)]
+public class RequireChannelAttribute(params ulong[] channelIds) : PreconditionAttribute
 {
-    /// <summary>
-    /// Requires the command to be executed in a specific channel.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class RequireChannelAttribute : PreconditionAttribute
+    public override Task<PreconditionResult> CheckPermissionsAsync(
+        ICommandContext context,
+        CommandInfo command,
+        IServiceProvider services
+    )
     {
-        private readonly ulong[] _channelIds;
+        var result = channelIds.Any(x => x == context.Channel.Id)
+            ? PreconditionResult.FromSuccess()
+            : PreconditionResult.FromError("Command executed in wrong channel.");
 
-        /// <summary>
-        /// Creates a new <see cref="RequireChannelAttribute"/> with the channel ids provided.
-        /// </summary>
-        /// <param name="channelIds">Channels where the command can be executed in.</param>
-        public RequireChannelAttribute(params ulong[] channelIds)
-        {
-            _channelIds = channelIds;
-        }
-
-        public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
-        {
-            if (!_channelIds.Any(x => x == context.Channel.Id))
-            {
-                return Task.FromResult(PreconditionResult.FromError("Command executed in wrong channel."));
-            }
-
-            return Task.FromResult(PreconditionResult.FromSuccess());
-        }
+        return Task.FromResult(result);
     }
 }

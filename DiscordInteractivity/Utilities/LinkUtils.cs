@@ -1,45 +1,41 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿namespace DiscordInteractivity.Utilities;
 
-namespace DiscordInteractivity.Utilities
+public static class LinkUtils
 {
-    public static class LinkUtils
+    public static string GetWebsiteName(string url)
     {
-        public static string GetWebsiteName(string url)
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
         {
-            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
-            {
-                uri = new UriBuilder(url).Uri;
-            }
-
-            return uri.Host;
+            uri = new UriBuilder(url).Uri;
         }
 
-        public static async Task<bool> WebsiteExists(string url, int timeout = 3000)
+        return uri.Host;
+    }
+
+    public static async Task<bool> WebsiteExists(
+        this HttpClient httpClient,
+        string url,
+        int timeout = 3000
+    )
+    {
+        var request = new HttpRequestMessage(HttpMethod.Head, url);
+
+        var cancellationToken = new CancellationTokenSource(timeout).Token;
+
+        try
         {
-            HttpWebResponse response = null;
-
-            var request = (HttpWebRequest)WebRequest.Create(url);
-
-            request.Method = "HEAD";
-            request.Timeout = timeout;
-
-
-            try
-            {
-                response = (HttpWebResponse)await request.GetResponseAsync();
-            }
-            catch
-            {
-                return false;
-            }
-            finally
-            {
-                response?.Close();
-            }
-
-            return true;
+            var response = await httpClient.SendAsync(
+                request,
+                HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken
+            );
+            response.EnsureSuccessStatusCode();
         }
+        catch
+        {
+            return false;
+        }
+
+        return true;
     }
 }

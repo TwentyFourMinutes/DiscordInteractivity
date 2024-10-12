@@ -1,24 +1,15 @@
-﻿using DiscordInteractivity.Core;
-using System.Threading.Tasks;
+﻿using DiscordInteractivity.Core.Interactivity;
 
-namespace DiscordInteractivity.Callbacks
+namespace DiscordInteractivity.Callbacks;
+
+internal class DiscordClientCallbacks(InteractivityService service)
 {
-	internal class DiscordClientCallbacks
-	{
-		private readonly InteractivityService _service;
+    internal async Task Ready()
+    {
+        var info = await service.DiscordClient.GetApplicationInfoAsync();
+        service.BotOwner = info.Owner;
 
-		internal DiscordClientCallbacks(InteractivityService service)
-		{
-			_service = service;
-		}
-
-		internal async Task Ready()
-		{
-			var info = await _service.DiscordClient.GetApplicationInfoAsync();
-			_service.BotOwner = info.Owner;
-
-			if (_service.Config.HasMentionPrefix)
-				_service.Config.CommandPrefixes.Add($"<@{_service.DiscordClient.CurrentUser.Id}>");		
-		}
-	}
+        if (service.Config.HasMentionPrefix)
+            service.Config.CommandPrefixes.Add($"<@{service.DiscordClient.CurrentUser.Id}>");
+    }
 }
