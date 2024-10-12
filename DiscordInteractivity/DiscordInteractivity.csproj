@@ -6,15 +6,21 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Twenty</Authors>
     <Description>This is an addon for the Discord API Wrapper Discord.Net which adds some useful features as well as some interactivity.</Description>
-    <PackageLicenseUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/blob/dev/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageTags>Discord.Net Discord.Net.Addons Discord.Addons DiscordInteractivity Discord Interactivity Addon</PackageTags>
     <Copyright>Copyright 2024 ©</Copyright>
     <AssemblyName>DiscordInteractivity</AssemblyName>
     <Version>1.1.0</Version>
     <AssemblyVersion>1.1.0</AssemblyVersion>
     <FileVersion>1.1.0</FileVersion>
+    <Language>en</Language>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TwentyFourMinutes/DiscordInteractivity/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    
     <SignAssembly>false</SignAssembly>
 
     <LangVersion>preview</LangVersion>
@@ -33,6 +39,15 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)../LICENSE" Pack="true" PackagePath="">
+      <Visible>false</Visible>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)../README.md" Pack="true" PackagePath="">
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>DiscordInteractivity.xml</DocumentationFile>
