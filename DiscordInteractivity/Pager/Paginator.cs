@@ -1,175 +1,174 @@
 ﻿using Discord;
-using Discord.Commands;
-using Discord.Rest;
 using Discord.WebSocket;
 using DiscordInteractivity.Core;
 using DiscordInteractivity.Enums;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DiscordInteractivity.Pager
 {
-	/// <summary>
-	/// The finalized paginated message handler.
-	/// </summary>
-	public class Paginator : IDisposable
-	{
-		private PaginatorBuilder _paginator;
-		private InteractivityService _interactivity;
+    /// <summary>
+    /// The finalized paginated message handler.
+    /// </summary>
+    public class Paginator : IDisposable
+    {
+        private PaginatorBuilder _paginator;
+        private InteractivityService _interactivity;
 
-		private readonly int _totalPages;
-		private int _currentPage;
+        private readonly int _totalPages;
+        private int _currentPage;
 
-		private IUserMessage _message;
+        private IUserMessage _message;
 
-		/// <summary>
-		/// Determines whether this instance is already Disposed or not.
-		/// </summary>
-		public bool IsDisposed { get; private set; }
+        /// <summary>
+        /// Determines whether this instance is already Disposed or not.
+        /// </summary>
+        public bool IsDisposed { get; private set; }
 
-		internal Paginator(PaginatorBuilder paginator)
-		{
-			_paginator = paginator;
-			_totalPages = _paginator.Pages.Count;
-		}
+        internal Paginator(PaginatorBuilder paginator)
+        {
+            _paginator = paginator;
+            _totalPages = _paginator.Pages.Count;
+        }
 
-		internal async Task<IUserMessage> Initialize(InteractivityService interactivity, IMessageChannel channel, TimeSpan? timeOut)
-		{
-			_interactivity = interactivity;
+        internal async Task<IUserMessage> Initialize(InteractivityService interactivity, IMessageChannel channel, TimeSpan? timeOut)
+        {
+            _interactivity = interactivity;
 
-			var page = GetCurrentPage();
-			_message = await channel.SendMessageAsync(embed: page);
+            var page = GetCurrentPage();
+            _message = await channel.SendMessageAsync(embed: page);
 
-			_interactivity.DiscordClient.ReactionAdded += ReactionAdded;
-			_interactivity.DiscordClient.ReactionRemoved += ReactionChanged;
+            _interactivity.DiscordClient.ReactionAdded += ReactionAdded;
+            _interactivity.DiscordClient.ReactionRemoved += ReactionChanged;
 
-			_ = Task.Delay(timeOut ?? interactivity.Config.DefaultPagerTimeout).ContinueWith(_ =>
-			{
-				if (IsDisposed)
-					return;
-				_message.TryDeleteAsync().ConfigureAwait(false);
-				this.Dispose();
-			}).ConfigureAwait(false);
+            _ = Task.Delay(timeOut ?? interactivity.Config.DefaultPagerTimeout).ContinueWith(_ =>
+            {
+                if (IsDisposed)
+                    return;
+                _message.TryDeleteAsync().ConfigureAwait(false);
+                this.Dispose();
+            }).ConfigureAwait(false);
 
-			AddReactions(_message);
+            AddReactions(_message);
 
-			return _message;
-		}
+            return _message;
+        }
 
-		private void AddReactions(IUserMessage msg)
-		{
-			_ = Task.Run(async () =>
-			{
-				try
-				{
-					await msg.AddReactionAsync(_interactivity.Config.StartEmoji);
-					await msg.AddReactionAsync(_interactivity.Config.BacktEmoji);
-					await msg.AddReactionAsync(_interactivity.Config.StopEmoji);
-					await msg.AddReactionAsync(_interactivity.Config.ForwardEmoji);
-					await msg.AddReactionAsync(_interactivity.Config.EndEmoji);
-				}
-				catch
-				{
-					//TODO
-				}
-			});
-		}
+        private void AddReactions(IUserMessage msg)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await msg.AddReactionAsync(_interactivity.Config.StartEmoji);
+                    await msg.AddReactionAsync(_interactivity.Config.BacktEmoji);
+                    await msg.AddReactionAsync(_interactivity.Config.StopEmoji);
+                    await msg.AddReactionAsync(_interactivity.Config.ForwardEmoji);
+                    await msg.AddReactionAsync(_interactivity.Config.EndEmoji);
+                }
+                catch
+                {
+                    //TODO
+                }
+            });
+        }
 
-		private async Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
-		{
-			if (_paginator.RemoveOtherReactions && arg3.UserId != _interactivity.DiscordClient.CurrentUser.Id && (_paginator.Author.Id != arg3.UserId || !_interactivity.Config.PagerEmojis.Any(x => x.Name == arg3.Emote.Name)))
-			{
-				if (arg3.User.IsSpecified)
-				{
-					await arg1.GetOrDownloadAsync();
-					await arg1.Value.RemoveReactionAsync(arg3.Emote, arg3.User.Value);
-				}
-				return;
-			}
-			else
-				await ReactionChanged(arg1, arg2, arg3);
-		}
+        private async Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction arg3)
+        {
+            if (_paginator.RemoveOtherReactions && arg3.UserId != _interactivity.DiscordClient.CurrentUser.Id && (_paginator.Author.Id != arg3.UserId || !_interactivity.Config.PagerEmojis.Any(x => x.Name == arg3.Emote.Name)))
+            {
+                if (arg3.User.IsSpecified)
+                {
+                    await arg1.GetOrDownloadAsync();
+                    await arg1.Value.RemoveReactionAsync(arg3.Emote, arg3.User.Value);
+                }
 
-		private async Task ReactionChanged(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
-		{
-			if (!arg1.HasValue || arg1.Value.Id != _message.Id || arg3.UserId != _paginator.Author.Id)
-				return;
+                return;
+            }
+            else
+                await ReactionChanged(arg1, arg2, arg3);
+        }
 
-			var emoteName = arg3.Emote.Name;
+        private async Task ReactionChanged(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction arg3)
+        {
+            var message = await arg1.DownloadAsync();
 
-			if (emoteName == _interactivity.Config.StartEmoji.Name)
-				_currentPage = 0;
-			else if (emoteName == _interactivity.Config.BacktEmoji.Name && _currentPage > 0)
-				_currentPage--;
-			else if (emoteName == _interactivity.Config.StopEmoji.Name)
-			{
-				await _message.TryDeleteAsync();
-				Dispose();
-				return;
-			}
-			else if (emoteName == _interactivity.Config.ForwardEmoji.Name && _currentPage + 1 < _totalPages)
-				_currentPage++;
-			else if (emoteName == _interactivity.Config.EndEmoji.Name)
-				_currentPage = _totalPages - 1;
-			else
-				return;
+            if (message.Id != _message.Id || arg3.UserId != _paginator.Author.Id)
+                return;
 
-			await _message.ModifyAsync(x => x.Embed = GetCurrentPage());
-		}
+            var emoteName = arg3.Emote.Name;
 
-		private Embed GetCurrentPage()
-		{
-			if (_currentPage > _totalPages - 1 || _currentPage < 0)
-				throw new IndexOutOfRangeException("This Page does not exist!");
+            if (emoteName == _interactivity.Config.StartEmoji.Name)
+                _currentPage = 0;
+            else if (emoteName == _interactivity.Config.BacktEmoji.Name && _currentPage > 0)
+                _currentPage--;
+            else if (emoteName == _interactivity.Config.StopEmoji.Name)
+            {
+                await _message.TryDeleteAsync();
+                Dispose();
+                return;
+            }
+            else if (emoteName == _interactivity.Config.ForwardEmoji.Name && _currentPage + 1 < _totalPages)
+                _currentPage++;
+            else if (emoteName == _interactivity.Config.EndEmoji.Name)
+                _currentPage = _totalPages - 1;
+            else
+                return;
 
-			var page = _paginator.Pages[_currentPage];
+            await _message.ModifyAsync(x => x.Embed = GetCurrentPage());
+        }
 
-			EmbedBuilder eb = new EmbedBuilder
-			{
-				Color = page.Color ?? _paginator.Color,
-				Description = page.Description,
-				Title = page.Title ?? _paginator.Title,
-				ImageUrl = page.ImageUrl ?? _paginator.ImageUrl,
-				ThumbnailUrl = page.ThumbnailUrl ?? _paginator.ThumbnailUrl,
-			};
-			if (page.Fields != null)
-				eb.WithFields(page.Fields);
+        private Embed GetCurrentPage()
+        {
+            if (_currentPage > _totalPages - 1 || _currentPage < 0)
+                throw new IndexOutOfRangeException("This Page does not exist!");
 
-			EmbedFooterBuilder efb = new EmbedFooterBuilder();
+            var page = _paginator.Pages[_currentPage];
 
-			if (_paginator.PaginatorFooter.HasFlag(PaginatorFooter.BotAuthor))
-			{
-				efb.IconUrl = _interactivity.BotOwner.GetAvatarUrl() ?? _interactivity.BotOwner.GetDefaultAvatarUrl();
-				efb.Text = _interactivity.CopyrightInfo;
-			}
-			else if (_paginator.PaginatorFooter.HasFlag(PaginatorFooter.PaginatorAuthor))
-			{
-				efb.IconUrl = _paginator.Author.GetAvatarUrl() ?? _paginator.Author.GetDefaultAvatarUrl();
-				efb.Text = $"{_paginator.Author.Username}#{_paginator.Author.Discriminator}";
-			}
-			if (_paginator.PaginatorFooter.HasFlag(PaginatorFooter.BotAuthor))
-			{
-				efb.Text += $" | Page {_currentPage + 1} out of {_totalPages}";
-			}
+            EmbedBuilder eb = new EmbedBuilder
+            {
+                Color = page.Color ?? _paginator.Color,
+                Description = page.Description,
+                Title = page.Title ?? _paginator.Title,
+                ImageUrl = page.ImageUrl ?? _paginator.ImageUrl,
+                ThumbnailUrl = page.ThumbnailUrl ?? _paginator.ThumbnailUrl,
+            };
+            if (page.Fields != null)
+                eb.WithFields(page.Fields);
 
-			eb.WithFooter(efb);
+            EmbedFooterBuilder efb = new EmbedFooterBuilder();
 
-			return eb.Build();
-		}
-		
-		/// <summary>
-		/// Unsubscribes from all events.
-		/// </summary>
-		public void Dispose()
-		{
-			if (!IsDisposed)
-			{
-				IsDisposed = true;
-				_interactivity.DiscordClient.ReactionAdded -= ReactionAdded;
-				_interactivity.DiscordClient.ReactionRemoved -= ReactionChanged;
-				_paginator = null;
-			}
-		}
-	}
+            if (_paginator.PaginatorFooter.HasFlag(PaginatorFooter.BotAuthor))
+            {
+                efb.IconUrl = _interactivity.BotOwner.GetAvatarUrl() ?? _interactivity.BotOwner.GetDefaultAvatarUrl();
+                efb.Text = _interactivity.CopyrightInfo;
+            }
+            else if (_paginator.PaginatorFooter.HasFlag(PaginatorFooter.PaginatorAuthor))
+            {
+                efb.IconUrl = _paginator.Author.GetAvatarUrl() ?? _paginator.Author.GetDefaultAvatarUrl();
+                efb.Text = _paginator.Author.Username;
+            }
+
+            if (_paginator.PaginatorFooter.HasFlag(PaginatorFooter.BotAuthor))
+            {
+                efb.Text += $" | Page {_currentPage + 1} out of {_totalPages}";
+            }
+
+            eb.WithFooter(efb);
+
+            return eb.Build();
+        }
+
+        /// <summary>
+        /// Unsubscribes from all events.
+        /// </summary>
+        public void Dispose()
+        {
+            if (!IsDisposed)
+            {
+                IsDisposed = true;
+                _interactivity.DiscordClient.ReactionAdded -= ReactionAdded;
+                _interactivity.DiscordClient.ReactionRemoved -= ReactionChanged;
+                _paginator = null;
+            }
+        }
+    }
 }

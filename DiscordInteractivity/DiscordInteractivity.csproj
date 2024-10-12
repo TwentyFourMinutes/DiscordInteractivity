@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Twenty</Authors>
     <Description>This is an addon for the Discord API Wrapper Discord.Net which adds some useful features as well as some interactivity.</Description>
@@ -15,6 +16,7 @@
     <AssemblyVersion>1.0.1.1</AssemblyVersion>
     <FileVersion>1.0.1.1</FileVersion>
     <SignAssembly>false</SignAssembly>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,10 +24,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.Commands" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.Core" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.Rest" Version="2.0.1" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="2.0.1" />
+    <PackageReference Include="Discord.Net" Version="3.16.0" />
+    <PackageReference Include="Discord.Net.Commands" Version="3.16.0" />
+    <PackageReference Include="Discord.Net.Rest" Version="3.16.0" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="3.16.0" />
   </ItemGroup>
 </Project>
